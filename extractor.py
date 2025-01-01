@@ -167,6 +167,6 @@ if __name__ == '__main__':
         highlights.sort()
 
         for i, highl in enumerate(highlights):
-            command = "ffmpeg -ss " + sec2dtime(highl - clipLength) + " -to " + sec2dtime(highl) + " -i " + os.path.join(inputDir, fName) + " -c copy " + os.path.join(outputDir, fName + "_" + str(i + 1) + ".mp4")
+            command = "ffmpeg -ss " + sec2dtime(highl - clipLength) + " -to " + sec2dtime(highl) + " -i " + os.path.join(inputDir, fName) + " -vcodec libx265 -crf 28 " + os.path.join(outputDir, fName + "_" + str(i + 1) + ".mp4")
             print(command)
             os.system(command)
