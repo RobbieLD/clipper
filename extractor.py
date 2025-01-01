@@ -163,10 +163,13 @@ if __name__ == '__main__':
         if not fName.endswith(".MP4"):
             continue
 
+        print("Processing: " + fName)
+
         highlights = examine_mp4(os.path.join(inputDir, fName))
         highlights.sort()
 
         for i, highl in enumerate(highlights):
             command = "ffmpeg -ss " + sec2dtime(highl - clipLength) + " -to " + sec2dtime(highl) + " -i " + os.path.join(inputDir, fName) + " -vcodec libx265 -crf 28 " + os.path.join(outputDir, fName + "_" + str(i + 1) + ".mp4")
             print(command)
+            print("Extracting: " + str(i + 1))
             os.system(command)
