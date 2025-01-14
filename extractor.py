@@ -146,6 +146,9 @@ def sec2dtime(secs):
       
     return "%d:%02d:%02d.%03d" % (hour, min, secs, milsec) 
 
+def str2bool(v):
+  return str(v).lower() in ("yes", "true", "t", "1")
+
 # Main
 # CLI args must be in the following order
 # input_dir output_dir clip_length
@@ -155,6 +158,11 @@ if __name__ == '__main__':
     inputDir = "/var/in"
     outputDir = "/var/out"
     clipLength = int(os.environ['SPAN'])
+    dry = str2bool(os.environ['DRY'])
+    compress = str2bool(os.environ['COMPRESS'])
+
+    if dry:
+        print("Performing dry run and won't extract anything")
 
     fNames = os.listdir(inputDir)
     
@@ -169,7 +177,10 @@ if __name__ == '__main__':
         highlights.sort()
 
         for i, highl in enumerate(highlights):
-            command = "ffmpeg -ss " + sec2dtime(highl - clipLength) + " -to " + sec2dtime(highl) + " -i " + os.path.join(inputDir, fName) + " -vcodec libx265 -crf 28 " + os.path.join(outputDir, fName + "_" + str(i + 1) + ".mp4")
+            compression = " -vcodec libx264 -crf 28 " if compress else " -c copy "
+            command = "ffmpeg -ss " + sec2dtime((highl - 5) - clipLength) + " -to " + sec2dtime(highl - 5) + " -i " + os.path.join(inputDir, fName) + compression + os.path.join(outputDir, fName + "_" + str(i + 1) + ".mp4")
             print(command)
             print("Extracting: " + str(i + 1))
-            os.system(command)
+
+            if not dry:
+                os.system(command)
